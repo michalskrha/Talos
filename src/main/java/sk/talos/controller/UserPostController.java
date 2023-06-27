@@ -30,9 +30,9 @@ public class UserPostController {
     }
 
 
-    @ApiOperation(value = "View a single user post.", response = ResponseEntity.class)
+    @ApiOperation(value = "View all user posts.", response = ResponseEntity.class)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Successfully retrieved user post."),
+            @ApiResponse(code = 200, message = "Successfully retrieved user posts."),
             @ApiResponse(code = 401, message = "You are not authorized to view the resource."),
             @ApiResponse(code = 404, message = "The resource you were trying to reach is not found.")
     })

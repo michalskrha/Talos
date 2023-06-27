@@ -31,27 +31,13 @@ public class JsonPlaceholderUserServiceImpl implements JsonPlaceholderUserServic
 
     @Override
     public UserDto getUser(Long userId) {
+        RestTemplate restTemplate = new RestTemplateBuilder().build();
 
-
-        RestTemplate restTemplate = new RestTemplateBuilder()
-                .interceptors(new ClientHttpRequestInterceptor() {
-                    @Override
-                    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-                        return execution.execute(new HttpRequestWrapper(request) {
-                            @Override
-                            public URI getURI() {
-                                URI u = super.getURI();
-                                String strictlyEscapedQuery = StringUtils.replace(u.getRawQuery(), "+", "%2B");
-                                return UriComponentsBuilder.fromUri(u)
-                                        .replaceQuery(strictlyEscapedQuery)
-                                        .build(true).toUri();
-                            }
-                        }, body);
-                    }
-                }).build();
-
-        ResponseEntity<UserDto> response = restTemplate.exchange(env.getProperty("com.typicode.host.url") + "/users/" + userId,
-                HttpMethod.GET, null, UserDto.class);
+        ResponseEntity<UserDto> response = restTemplate
+                .exchange(env.getProperty("com.typicode.host.url") + "/users/" + userId,
+                        HttpMethod.GET,
+                        null,
+                        UserDto.class);
 
         return response.getBody();
     }

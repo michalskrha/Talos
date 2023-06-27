@@ -34,25 +34,13 @@ public class JsonPlaceholderPostServiceImpl implements JsonPlaceholderPostServic
     @Override
     public PostDto getPost(Long postId) {
 
-        RestTemplate restTemplate = new RestTemplateBuilder()
-                .interceptors(new ClientHttpRequestInterceptor() {
-                    @Override
-                    public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution) throws IOException {
-                        return execution.execute(new HttpRequestWrapper(request) {
-                            @Override
-                            public URI getURI() {
-                                URI u = super.getURI();
-                                String strictlyEscapedQuery = StringUtils.replace(u.getRawQuery(), "+", "%2B");
-                                return UriComponentsBuilder.fromUri(u)
-                                        .replaceQuery(strictlyEscapedQuery)
-                                        .build(true).toUri();
-                            }
-                        }, body);
-                    }
-                }).build();
+        RestTemplate restTemplate = new RestTemplateBuilder().build();
 
-        ResponseEntity<PostDto> response = restTemplate.exchange(env.getProperty("com.typicode.host.url") + "/posts/" + postId,
-                HttpMethod.GET, null, PostDto.class);
+        ResponseEntity<PostDto> response = restTemplate
+                .exchange(env.getProperty("com.typicode.host.url") + "/posts/" + postId,
+                        HttpMethod.GET,
+                        null,
+                        PostDto.class);
 
         return response.getBody();
     }

@@ -24,20 +24,15 @@ import java.util.List;
 public class SwaggerConfig {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
-    public static final String DEFAULT_INCLUDE_PATTERN = "/api/.*";
 
 
-    private Environment env;
-
-    public SwaggerConfig(Environment env) {
-        this.env = env;
-    }
 
     @Bean
     public Docket api(ServletContext servletContext) {
         return new Docket(DocumentationType.SWAGGER_2)
                 .tags(
-                        new Tag(SwaggerTags.POSTS_TAG, SwaggerTags.POSTS_TAG_DESC, 1)
+                        new Tag(SwaggerTags.POSTS_TAG, SwaggerTags.POSTS_TAG_DESC, 1),
+                        new Tag(SwaggerTags.USER_POSTS_TAG, SwaggerTags.USER_POSTS_TAG_DESC, 2)
                 )
                 .securityContexts(Arrays.asList(securityContext()))
                 .securitySchemes(Arrays.asList(apiKey()))
@@ -45,7 +40,7 @@ public class SwaggerConfig {
 //                .globalOperationParameters(globalParameterList())
                 .select()
 //                .apis(RequestHandlerSelectors.any())
-                .apis(RequestHandlerSelectors.basePackage( "com.talos" ))
+                .apis(RequestHandlerSelectors.basePackage( "sk.talos" ))
 //                .paths(PathSelectors.any())
                 .build()
                 .apiInfo(this.apiInfo());
@@ -53,27 +48,14 @@ public class SwaggerConfig {
 
 
 
-    private List<Parameter> globalParameterList() {
-        Parameter authTokenHeader = new ParameterBuilder()
-                        .name("X-tenant")
-                        .modelRef(new ModelRef("string"))
-                        .required(true)
-                        .parameterType("header")
-                        .description("Tenant ID")
-                        .build();
-
-        return Collections.singletonList(authTokenHeader);
-    }
-
-
 
     private ApiInfo apiInfo() {
         return new ApiInfo(
-                "Trip Management System App B2B REST API",
-                "This REST API provide to travel agency many possibilities to manage customer trips with their events.",
+                "Talos App B2B REST API",
+                "This REST API provide to talos post features.",
                 "REST API 1.0",
                 "Terms of service",
-                new Contact("Travelblocks s.r.o.", "https://www.travelblocks.sk", "travelblocks@travelblocks.sk"),
+                new Contact("Kodeo Solutions s.r.o.", "https://www.kodeosolutions.sk", "kodeosolutions@kodeosolutions.sk"),
                 "License of API", "API license URL", Collections.emptyList());
     }
 
