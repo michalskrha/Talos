@@ -11,6 +11,4 @@ create table if not exists post
     title              varchar(255),
     body               text,
     user_id            bigint not null
-        constraint fk859n2jvi2763ret7263et24e6
-            references users
 );
