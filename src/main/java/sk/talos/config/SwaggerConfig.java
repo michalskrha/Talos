@@ -25,8 +25,6 @@ public class SwaggerConfig {
 
     public static final String AUTHORIZATION_HEADER = "Authorization";
 
-
-
     @Bean
     public Docket api(ServletContext servletContext) {
         return new Docket(DocumentationType.SWAGGER_2)
@@ -34,14 +32,8 @@ public class SwaggerConfig {
                         new Tag(SwaggerTags.POSTS_TAG, SwaggerTags.POSTS_TAG_DESC, 1),
                         new Tag(SwaggerTags.USER_POSTS_TAG, SwaggerTags.USER_POSTS_TAG_DESC, 2)
                 )
-                .securityContexts(Arrays.asList(securityContext()))
-                .securitySchemes(Arrays.asList(apiKey()))
-//                .useDefaultResponseMessages(false)
-//                .globalOperationParameters(globalParameterList())
                 .select()
-//                .apis(RequestHandlerSelectors.any())
                 .apis(RequestHandlerSelectors.basePackage( "sk.talos" ))
-//                .paths(PathSelectors.any())
                 .build()
                 .apiInfo(this.apiInfo());
     }
@@ -63,18 +55,4 @@ public class SwaggerConfig {
         return new ApiKey("JWT", AUTHORIZATION_HEADER, "header");
     }
 
-    private SecurityContext securityContext() {
-        return SecurityContext.builder()
-                .securityReferences(defaultAuth())
-//                .forPaths(PathSelectors.regex(DEFAULT_INCLUDE_PATTERN))
-                .build();
-    }
-
-    List<SecurityReference> defaultAuth() {
-        AuthorizationScope authorizationScope = new AuthorizationScope("global", "accessEverything");
-        AuthorizationScope[] authorizationScopes = new AuthorizationScope[1];
-        authorizationScopes[0] = authorizationScope;
-        return Arrays.asList(
-                new SecurityReference("JWT", authorizationScopes));
-    }
 }
