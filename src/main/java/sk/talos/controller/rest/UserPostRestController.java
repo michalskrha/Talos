@@ -1,4 +1,4 @@
-package sk.talos.controller;
+package sk.talos.controller.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -8,24 +8,22 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sk.talos.domain.http.response.CommonResponseData;
-import sk.talos.domain.http.response.ResponseErrorData;
 import sk.talos.domain.post.PostDto;
 import sk.talos.enums.SwaggerTags;
 import sk.talos.mapper.PostMapper;
 import sk.talos.model.Post;
 import sk.talos.service.PostService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 @RestController
 @RequestMapping(path = "/api/users/{userId}/posts")
 @Api(tags = {SwaggerTags.USER_POSTS_TAG})
-public class UserPostController {
+public class UserPostRestController {
 
     private PostService postService;
 
-    public UserPostController(PostService postService) {
+    public UserPostRestController(PostService postService) {
         this.postService = postService;
     }
 

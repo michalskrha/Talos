@@ -53,6 +53,11 @@ public class PostServiceImpl implements PostService {
     }
 
     @Override
+    public List<Post> getPosts() {
+        return postRepository.findAll();
+    }
+
+    @Override
     public List<Post> getUserPosts(Long userId) {
 
         if (userId == null) {

@@ -1,4 +1,4 @@
-package sk.talos.controller;
+package sk.talos.controller.rest;
 
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -21,12 +21,12 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping(path = "/api/posts")
 @Api(tags = {SwaggerTags.POSTS_TAG})
-public class PostController {
+public class PostRestController {
 
     private PostService postService;
     private JsonPlaceholderPostService jsonPlaceholderPostService;
 
-    public PostController(PostService postService, JsonPlaceholderPostService jsonPlaceholderPostService) {
+    public PostRestController(PostService postService, JsonPlaceholderPostService jsonPlaceholderPostService) {
         this.postService = postService;
         this.jsonPlaceholderPostService = jsonPlaceholderPostService;
     }

@@ -10,6 +10,8 @@ public interface PostService {
 
     Post getPost(Long postId);
 
+    List<Post> getPosts();
+
     List<Post> getUserPosts(Long userId);
 
     Post updatePost(PostDto postDto);
