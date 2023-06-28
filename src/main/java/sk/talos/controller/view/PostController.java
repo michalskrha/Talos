@@ -1,22 +1,19 @@
 package sk.talos.controller.view;
 
-import io.swagger.models.Model;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
-import sk.talos.domain.http.response.CommonResponseData;
-import sk.talos.domain.http.response.ResponseErrorData;
 import sk.talos.domain.post.PostDto;
 import sk.talos.mapper.PostMapper;
 import sk.talos.model.Post;
 import sk.talos.service.PostService;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @Controller
@@ -45,11 +42,8 @@ public class PostController {
     @RequestMapping("/new")
     public ModelAndView newPost()
     {
-//        List<Post> userPosts = postService.getPosts();
-//        List<PostDto> postDtoList = PostMapper.INSTANCE.postsToPostDtoList(userPosts);
-
         ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("new");
+        modelAndView.setViewName("new-post");
 
         Post post = new Post();
         modelAndView.addObject("post", post);
@@ -59,12 +53,58 @@ public class PostController {
 
 
     @RequestMapping(value="/create", method= RequestMethod.POST)
-    public String createPost(@ModelAttribute PostDto postDto,
-                             BindingResult errors,
-                             Model model)
-    {
+    public String createPost(@Valid PostDto postDto,
+                             BindingResult result,
+                             Model model) {
+
+        model.addAttribute("post", postDto);
+
+        if (result.hasErrors()) {
+            if (result.getFieldError("userId") != null) {
+                model.addAttribute("userIdError", result.getFieldError("userId").getDefaultMessage());
+            }
+            if (result.getFieldError("title") != null) {
+                model.addAttribute("titleError", result.getFieldError("title").getDefaultMessage());
+            }
+            return "new-post";
+        }
 
         postService.createPost(postDto);
+
+        return "redirect:/";
+    }
+
+
+    @RequestMapping(value="/update/{postId}")
+    public ModelAndView updatePosts(@PathVariable Long postId)
+    {
+        Post post = postService.getPost(postId);
+
+        ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("update");
+        modelAndView.addObject("post", PostMapper.INSTANCE.postToPostDto(post));
+
+        return modelAndView;
+    }
+
+
+    @RequestMapping(value="/save", method= RequestMethod.POST)
+    public String savePost(@Valid PostDto postDto,
+                           BindingResult result,
+                           Model model) {
+        model.addAttribute("post", postDto);
+
+        if (result.hasErrors()) {
+            if (result.getFieldError("userId") != null) {
+                model.addAttribute("userIdError", result.getFieldError("userId").getDefaultMessage());
+            }
+            if (result.getFieldError("title") != null) {
+                model.addAttribute("titleError", result.getFieldError("title").getDefaultMessage());
+            }
+            return "update";
+        }
+
+        postService.updatePost(postDto);
 
         return "redirect:/";
     }
