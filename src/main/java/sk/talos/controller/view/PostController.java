@@ -69,7 +69,12 @@ public class PostController {
             return "new-post";
         }
 
-        postService.createPost(postDto);
+        try {
+            postService.createPost(postDto);
+        } catch (Exception e) {
+            model.addAttribute("errorMessage", e.getMessage());
+            return "new-post";
+        }
 
         return "redirect:/";
     }

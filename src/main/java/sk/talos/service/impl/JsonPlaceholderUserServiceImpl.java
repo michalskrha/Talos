@@ -11,6 +11,7 @@ import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.http.client.support.HttpRequestWrapper;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import sk.talos.domain.post.UserDto;
@@ -32,12 +33,23 @@ public class JsonPlaceholderUserServiceImpl implements JsonPlaceholderUserServic
     @Override
     public UserDto getUser(Long userId) {
         RestTemplate restTemplate = new RestTemplateBuilder().build();
-
-        ResponseEntity<UserDto> response = restTemplate
-                .exchange(env.getProperty("com.typicode.host.url") + "/users/" + userId,
-                        HttpMethod.GET,
-                        null,
-                        UserDto.class);
+        ResponseEntity<UserDto> response;
+        try {
+            response = restTemplate
+                    .exchange(env.getProperty("com.typicode.host.url") + "/users/" + userId,
+                            HttpMethod.GET,
+                            null,
+                            UserDto.class);
+        } catch (HttpClientErrorException e) {
+            switch (e.getStatusCode()) {
+                case NOT_FOUND: {
+                    throw new IllegalStateException("User not found for User ID : "+userId);
+                }
+                default: {
+                    throw e;
+                }
+            }
+        }
 
         return response.getBody();
     }
