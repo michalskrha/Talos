@@ -13,11 +13,6 @@ services:
   db:
     image: 'postgres:12.1-alpine'
     container_name: db
-    healthcheck:
-      test: [ "CMD", "pg_isready", "-q", "-d", "postgres", "-U", "root" ]
-      timeout: 45s
-      interval: 10s
-      retries: 10
     restart: always
     environment:
       - POSTGRES_USER=root
