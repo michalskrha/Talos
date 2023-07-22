@@ -3,12 +3,13 @@ package sk.talos.service;
 import sk.talos.domain.post.PostDto;
 import sk.talos.model.Post;
 import java.util.List;
+import java.util.Optional;
 
 public interface PostService {
 
     Post createPost(PostDto postDto);
 
-    Post getPost(Long postId);
+    Optional<Post> getPost(Long postId);
 
     List<Post> getPosts();
 

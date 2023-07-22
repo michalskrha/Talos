@@ -1,56 +1,29 @@
 package sk.talos.service.impl;
 
-import org.springframework.boot.web.client.RestTemplateBuilder;
-import org.springframework.core.env.Environment;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpRequest;
-import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.ClientHttpRequestExecution;
-import org.springframework.http.client.ClientHttpRequestInterceptor;
-import org.springframework.http.client.ClientHttpResponse;
-import org.springframework.http.client.support.HttpRequestWrapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
 import sk.talos.domain.post.UserDto;
 import sk.talos.service.JsonPlaceholderUserService;
 
-import java.io.IOException;
-import java.net.URI;
+import java.util.Optional;
 
 @Service
 public class JsonPlaceholderUserServiceImpl implements JsonPlaceholderUserService {
 
-
-    private Environment env;
-
-    public JsonPlaceholderUserServiceImpl(Environment env) {
-        this.env = env;
-    }
+    @Value("${com.typicode.host.url}")
+    private String tipicodeHostUrl;
 
     @Override
-    public UserDto getUser(Long userId) {
-        RestTemplate restTemplate = new RestTemplateBuilder().build();
-        ResponseEntity<UserDto> response;
-        try {
-            response = restTemplate
-                    .exchange(env.getProperty("com.typicode.host.url") + "/users/" + userId,
-                            HttpMethod.GET,
-                            null,
-                            UserDto.class);
-        } catch (HttpClientErrorException e) {
-            switch (e.getStatusCode()) {
-                case NOT_FOUND: {
-                    throw new IllegalStateException("User not found for User ID : "+userId);
-                }
-                default: {
-                    throw e;
-                }
-            }
-        }
+    public Optional<UserDto> getUser(Long userId) {
+        validateUserId(userId);
+        UserDto userDto = new RestTemplate().getForObject(tipicodeHostUrl + "/users/" + userId, UserDto.class);
+        return Optional.ofNullable(userDto);
+    }
 
-        return response.getBody();
+    private void validateUserId(Long userId) {
+        if (userId == null) {
+            throw new IllegalArgumentException("user_id_is_mandatory");
+        }
     }
 }

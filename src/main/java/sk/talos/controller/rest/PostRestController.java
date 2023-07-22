@@ -17,6 +17,7 @@ import sk.talos.service.JsonPlaceholderPostService;
 import sk.talos.service.PostService;
 
 import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/api/posts")
@@ -40,20 +41,15 @@ public class PostRestController {
     @GetMapping(path = "/{postId}")
     public ResponseEntity getPost(@PathVariable Long postId) {
 
-        Post post = postService.getPost(postId);
-        PostDto postDto = PostMapper.INSTANCE.postToPostDto(post);
+        PostDto postDto = postService.getPost(postId)
+                .map(PostMapper.INSTANCE::postToPostDto)
+                .orElseGet(() -> jsonPlaceholderPostService.getPost(postId).orElse(null));
 
-        if (postDto == null) {
-            postDto = jsonPlaceholderPostService.getPost(postId);
-        }
-
-        if (postDto == null) {
-            return new ResponseEntity(new CommonResponseData<>(null,
-                    new ResponseErrorData("Post not found.", HttpStatus.NOT_FOUND.getReasonPhrase())),
-                    HttpStatus.NOT_FOUND);
-        }
-
-        return new ResponseEntity(new CommonResponseData(postDto), HttpStatus.OK);
+        return postDto != null
+                ? new ResponseEntity(new CommonResponseData(postDto), HttpStatus.OK)
+                : new ResponseEntity(new CommonResponseData<>(null,
+                new ResponseErrorData("Post not found.", HttpStatus.NOT_FOUND.getReasonPhrase())),
+                HttpStatus.NOT_FOUND);
     }
 
 

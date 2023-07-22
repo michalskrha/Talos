@@ -3,7 +3,6 @@ package sk.talos.controller.view;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,12 +14,13 @@ import sk.talos.service.PostService;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping(path = "")
 public class PostController {
 
-    private PostService postService;
+    private final PostService postService;
 
     public PostController(PostService postService) {
         this.postService = postService;
@@ -81,13 +81,12 @@ public class PostController {
 
 
     @RequestMapping(value="/update/{postId}")
-    public ModelAndView updatePosts(@PathVariable Long postId)
-    {
-        Post post = postService.getPost(postId);
+    public ModelAndView updatePosts(@PathVariable Long postId) {
+        Optional<Post> post = postService.getPost(postId);
 
         ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("update");
-        modelAndView.addObject("post", PostMapper.INSTANCE.postToPostDto(post));
+        modelAndView.addObject("post", post.map(PostMapper.INSTANCE::postToPostDto).orElseGet(PostDto::new));
 
         return modelAndView;
     }
