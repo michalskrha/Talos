@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sk.talos.domain.http.response.CommonResponseData;
+import sk.talos.domain.http.response.ResponseBuilder;
 import sk.talos.domain.http.response.ResponseErrorData;
 import sk.talos.domain.http.response.ResponseMetaData;
 import sk.talos.domain.post.PostDto;
@@ -49,7 +50,7 @@ public class PostRestController {
         Page<Post> posts = postService.getPosts(PageRequest.of(page, count));
         List<PostDto> postDtoList = PostMapper.INSTANCE.postsToPostDtoList(posts.getContent());
 
-        return new ResponseEntity<>(new CommonResponseData(postDtoList, buildPagination(posts)), HttpStatus.OK);
+        return ResponseBuilder.success(postDtoList, HttpStatus.OK, buildPagination(posts));
     }
 
 
@@ -67,10 +68,8 @@ public class PostRestController {
                 .orElseGet(() -> jsonPlaceholderPostService.getPost(postId).orElse(null));
 
         return postDto != null
-                ? new ResponseEntity(new CommonResponseData(postDto), HttpStatus.OK)
-                : new ResponseEntity(new CommonResponseData<>(null,
-                new ResponseErrorData("Post not found.", HttpStatus.NOT_FOUND.getReasonPhrase())),
-                HttpStatus.NOT_FOUND);
+                ? ResponseBuilder.success(postDto, HttpStatus.OK)
+                : ResponseBuilder.error("Post not found.", HttpStatus.NOT_FOUND);
     }
 
 
@@ -87,11 +86,10 @@ public class PostRestController {
         try {
             post = postService.createPost(postDto);
         } catch (IllegalStateException e) {
-            ResponseErrorData error = new ResponseErrorData(e.getMessage(), HttpStatus.BAD_REQUEST.getReasonPhrase());
-            return new ResponseEntity(new CommonResponseData(null, error), HttpStatus.CONFLICT);
+            return ResponseBuilder.error(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity(new CommonResponseData(PostMapper.INSTANCE.postToPostDto(post)), HttpStatus.CREATED);
+        return ResponseBuilder.success(PostMapper.INSTANCE.postToPostDto(post), HttpStatus.CREATED);
     }
 
 
@@ -108,8 +106,7 @@ public class PostRestController {
 
         Post post = postService.updatePost(postId, postDto);
         PostDto createdPostDto = PostMapper.INSTANCE.postToPostDto(post);
-
-        return new ResponseEntity(new CommonResponseData(createdPostDto), HttpStatus.OK);
+        return ResponseBuilder.success(createdPostDto, HttpStatus.OK);
     }
 
 
