@@ -1,5 +1,7 @@
 package sk.talos.service.impl;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import sk.talos.domain.post.PostDto;
 import sk.talos.mapper.PostMapper;
@@ -45,12 +47,8 @@ public class PostServiceImpl implements PostService {
      */
     @Override
     public Optional<Post> getPost(Long postId) {
-
-        if (postId == null) {
-            throw new IllegalArgumentException("post_id_is_mandatory");
-        }
-
-        return postRepository.findById(postId);
+        return Optional.ofNullable(postId)
+                .flatMap(postRepository::findById);
     }
 
     /**
@@ -62,8 +60,18 @@ public class PostServiceImpl implements PostService {
         return postRepository.findAll();
     }
 
+
     /**
-     * Gets all Posts for a given user.
+     * Gets all Posts per page.
+     * @return
+     */
+    @Override
+    public Page<Post> getPosts(PageRequest pageRequest) {
+        return postRepository.findAll(pageRequest);
+    }
+
+    /**
+     * Gets all Posts for a given user ID.
      * @param userId
      * @return
      */
@@ -83,7 +91,7 @@ public class PostServiceImpl implements PostService {
      * @return
      */
     @Override
-    public Post updatePost(PostDto postDto) {
+    public Post updatePost(Long postId, PostDto postDto) {
         Post post = Optional.ofNullable(postDto)
                 .map(dto -> this.getPost(dto.getId())
                         .orElseThrow(() -> new IllegalStateException("post_not_found")))
@@ -113,16 +121,10 @@ public class PostServiceImpl implements PostService {
      * @param postDto
      */
     private void validateBeforePost(PostDto postDto) {
-
-        if (postDto == null) {
-            throw new IllegalArgumentException("post_object_is_required");
-        }
-
-        if (postDto.getUserId() == null) {
-            throw new IllegalStateException("post_user_id_is_mandatory");
+        if (postDto == null || postDto.getUserId() == null) {
+            throw new IllegalArgumentException("post_and_user_id_are_required");
         }
     }
-
     /**
      * Validates if the user exists in the JsonPlaceholder service.
      *
@@ -130,7 +132,7 @@ public class PostServiceImpl implements PostService {
      */
     private void validateUserInJsonPlaceholder(Long userId) {
         jsonPlaceholderUserService.getUser(userId)
-                .orElseThrow(() -> new IllegalStateException("post_user_does_not_exist"));
+                .orElseThrow(() -> new IllegalStateException("user_does_not_exist_in_json_placeholder"));
     }
 
 }

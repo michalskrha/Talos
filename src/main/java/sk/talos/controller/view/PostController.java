@@ -3,9 +3,7 @@ package sk.talos.controller.view;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import sk.talos.domain.post.PostDto;
 import sk.talos.mapper.PostMapper;
@@ -26,7 +24,7 @@ public class PostController {
         this.postService = postService;
     }
 
-    @RequestMapping("/")
+    @GetMapping(path = "/")
     public ModelAndView index()
     {
         List<Post> userPosts = postService.getPosts();
@@ -39,7 +37,7 @@ public class PostController {
         return modelAndView;
     }
 
-    @RequestMapping("/new")
+    @GetMapping(value="/new")
     public ModelAndView newPost()
     {
         ModelAndView modelAndView = new ModelAndView();
@@ -52,7 +50,7 @@ public class PostController {
     }
 
 
-    @RequestMapping(value="/create", method= RequestMethod.POST)
+    @PostMapping(value="/create")
     public String createPost(@Valid PostDto postDto,
                              BindingResult result,
                              Model model) {
@@ -60,12 +58,7 @@ public class PostController {
         model.addAttribute("post", postDto);
 
         if (result.hasErrors()) {
-            if (result.getFieldError("userId") != null) {
-                model.addAttribute("userIdError", result.getFieldError("userId").getDefaultMessage());
-            }
-            if (result.getFieldError("title") != null) {
-                model.addAttribute("titleError", result.getFieldError("title").getDefaultMessage());
-            }
+            handleValidationErrors(result, model);
             return "new-post";
         }
 
@@ -80,7 +73,7 @@ public class PostController {
     }
 
 
-    @RequestMapping(value="/update/{postId}")
+    @GetMapping(value="/update/{postId}")
     public ModelAndView updatePosts(@PathVariable Long postId) {
         Optional<Post> post = postService.getPost(postId);
 
@@ -92,29 +85,24 @@ public class PostController {
     }
 
 
-    @RequestMapping(value="/save", method= RequestMethod.POST)
+    @PostMapping(value="/save")
     public String savePost(@Valid PostDto postDto,
                            BindingResult result,
                            Model model) {
         model.addAttribute("post", postDto);
 
         if (result.hasErrors()) {
-            if (result.getFieldError("userId") != null) {
-                model.addAttribute("userIdError", result.getFieldError("userId").getDefaultMessage());
-            }
-            if (result.getFieldError("title") != null) {
-                model.addAttribute("titleError", result.getFieldError("title").getDefaultMessage());
-            }
+            handleValidationErrors(result, model);
             return "update";
         }
 
-        postService.updatePost(postDto);
+        postService.updatePost(postDto.getId(), postDto);
 
         return "redirect:/";
     }
 
 
-    @RequestMapping(value="/delete/{postId}")
+    @GetMapping(value="/delete/{postId}")
     public String deletePost(@PathVariable Long postId)
     {
         postService.deletePost(postId);
@@ -131,11 +119,19 @@ public class PostController {
         List<PostDto> postDtoList = PostMapper.INSTANCE.postsToPostDtoList(userPosts);
 
         ModelAndView modelAndView = new ModelAndView();
-//        modelAndView.setViewName("user-data");
         modelAndView.addObject("postList", postDtoList);
         return modelAndView;
     }
 
+
+    private void handleValidationErrors(BindingResult result, Model model) {
+        if (result.getFieldError("userId") != null) {
+            model.addAttribute("userIdError", result.getFieldError("userId").getDefaultMessage());
+        }
+        if (result.getFieldError("title") != null) {
+            model.addAttribute("titleError", result.getFieldError("title").getDefaultMessage());
+        }
+    }
 
 
 }

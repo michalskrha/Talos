@@ -20,12 +20,20 @@ import javax.persistence.*;
 @Table(name = "post")
 public class Post extends BaseEntity {
 
+    /**
+     * The title of the post.
+     */
     private String title;
 
+    /**
+     * The body content of the post.
+     */
     private String body;
 
+    /**
+     * The user ID associated with the post.
+     */
     @NotNull
     @Column(name = "user_id")
     private Long userId;
-
 }
