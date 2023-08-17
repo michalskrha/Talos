@@ -101,7 +101,7 @@ Distributed under the MIT License.
 
 Your Name - [Michal Škrha](https://sk.linkedin.com/in/michal-%C5%A1krha-23929873) - michal.skrha@kodeosolutions.sk
 
-Project Link: [https://gitlab.com/users/skrha/projects](https://gitlab.com/users/skrha/projects)
+Project Link: [https://github.com/michalskrha](https://github.com/michalskrha)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
