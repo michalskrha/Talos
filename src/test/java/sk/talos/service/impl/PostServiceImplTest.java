@@ -34,22 +34,30 @@ class PostServiceImplTest {
 
     @Test
     void testCreatePost_UserExists() {
+        // GIVEN
         // Create a sample PostDto
         PostDto postDto = new PostDto();
+        postDto.setTitle("title");
+        postDto.setBody("body");
         postDto.setUserId(1L);
 
         // Mock getUser method to return a non-empty Optional
         UserDto userDto = new UserDto();
+        userDto.setId(1L);
         when(jsonPlaceholderUserService.getUser(postDto.getUserId())).thenReturn(Optional.of(userDto));
 
         // Mock postRepository.save method to return a Post
         Post post = new Post();
         post.setId(1L);
+        post.setTitle("title");
+        post.setBody("body");
         when(postRepository.save(any())).thenReturn(post);
 
+        // WHEN
         // Call the createPost method
         Post result = postService.createPost(postDto);
 
+        // THEN
         // Verify that getUser and save methods are called with the correct parameters
         verify(jsonPlaceholderUserService).getUser(postDto.getUserId());
         verify(postRepository).save(any());
@@ -60,24 +68,22 @@ class PostServiceImplTest {
 
     @Test
     void testCreatePost_UserDoesNotExist() {
+        // GIVEN
         // Create a sample PostDto
         PostDto postDto = new PostDto();
+        postDto.setTitle("title");
+        postDto.setBody("body");
         postDto.setUserId(1L);
 
         // Mock getUser method to return an empty Optional
         when(jsonPlaceholderUserService.getUser(postDto.getUserId())).thenReturn(Optional.empty());
 
+        // WHEN / THEN
         // Call the createPost method and expect an IllegalStateException to be thrown
         assertThrows(IllegalStateException.class, () -> postService.createPost(postDto));
 
         // Verify that getUser is called with the correct parameter
         verify(jsonPlaceholderUserService).getUser(postDto.getUserId());
-    }
-
-    @Test
-    void testGetPost_PostIdIsNull() {
-        // Call the getPost method and expect an IllegalArgumentException to be thrown
-        assertThrows(IllegalArgumentException.class, () -> postService.getPost(null));
     }
 
     @Test

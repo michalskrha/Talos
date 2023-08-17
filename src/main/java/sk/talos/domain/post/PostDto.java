@@ -17,6 +17,13 @@ import javax.validation.constraints.NotNull;
 @FieldNameConstants
 public class PostDto extends BaseEntityDto {
 
+    public PostDto(Long id, String title, String body, Long userId) {
+        super(id);
+        this.title = title;
+        this.body = body;
+        this.userId = userId;
+    }
+
     @NotEmpty(message = "Post title is required.")
     @NotNull(message = "Post title is mandatory field.")
     private String title;

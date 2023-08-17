@@ -24,9 +24,11 @@ import javax.validation.Valid;
 import java.util.List;
 
 @RestController
-@RequestMapping(path = "/api/posts")
+@RequestMapping(path = PostRestController.POSTS_PATH)
 @Api(tags = {SwaggerTags.POSTS_TAG})
 public class PostRestController {
+
+    public static final String POSTS_PATH = "/api/posts";
 
     private final PostService postService;
     private final JsonPlaceholderPostService jsonPlaceholderPostService;
@@ -133,7 +135,20 @@ public class PostRestController {
         return ResponseMetaData.builder()
                 .total(posts.getTotalElements())
                 .currentPage(posts.getNumber())
+                .perPage(posts.getSize())
+                .lastPage(getLastPage(posts.getTotalElements(), posts.getSize()))
+                .path(POSTS_PATH)
                 .build();
     }
 
+
+    private Long getLastPage(long total, long perPage) {
+        long lastPage = total / perPage;
+
+        if (total % perPage == 0) {
+            lastPage--;
+        }
+
+        return lastPage;
+    }
 }
