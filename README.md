@@ -1,6 +1,6 @@
 # Talos - User Post Administration
 
-This is a Spring Boot application for administering user posts. Users can create, update, and delete posts. Only registered users from the provided user list can create posts.
+This is a Spring Boot application for user posts management. Users can create, update, and delete posts. Only registered users provided by https://jsonplaceholder.typicode.com/users can create the posts.
 
 ## Technologies Used
 
